@@ -1,0 +1,19 @@
+# Reglas de escaneo OWASP ZAP
+# Configuración personalizada para detectar vulnerabilidades específicas de NoSQL
+
+# IGNORE: Reglas que no aplican para nuestra arquitectura
+10049	IGNORE	(Path Traversal - no aplica para API REST)
+10055	IGNORE	(CSP - manejado por Helmet en Express)
+
+# WARN: Advertencias que requieren revisión manual
+10023	WARN	(Information Disclosure - Suspicious Comments)
+10027	WARN	(Information Disclosure - Suspicious HTTP Headers)
+
+# FAIL: Vulnerabilidades críticas que deben fallar el build
+90020	FAIL	(NoSQL Injection - MongoDB)
+40012	FAIL	(Cross Site Scripting - Reflected)
+40014	FAIL	(Cross Site Scripting - Persistent)
+40018	FAIL	(SQL Injection - aunque usamos NoSQL, verificar sanitización)
+10202	FAIL	(Absence of Anti-CSRF Tokens)
+10021	FAIL	(X-Content-Type-Options Header Missing)
+10096	FAIL	(Timestamp Disclosure)

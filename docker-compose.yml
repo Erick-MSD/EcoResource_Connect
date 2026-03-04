@@ -1,0 +1,111 @@
+version: '3.8'
+
+services:
+  # Servicio de MongoDB
+  mongodb:
+    image: mongo:6.0
+    container_name: ecoresource-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: ecoresource_admin_2024
+      MONGO_INITDB_DATABASE: ecoresource_connect
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d
+    networks:
+      - ecoresource-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Servicio Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ecoresource-backend
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      MONGODB_URI: mongodb://admin:ecoresource_admin_2024@mongodb:27017/ecoresource_connect?authSource=admin
+      JWT_SECRET: ${JWT_SECRET:-change-this-in-production}
+      JWT_EXPIRE: ${JWT_EXPIRE:-15m}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - ecoresource-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:5000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Servicio Frontend React (opcional - placeholder)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ecoresource-frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_API_URL: http://localhost:5000/api/v1
+    depends_on:
+      - backend
+    networks:
+      - ecoresource-network
+
+  # SonarQube para análisis de código (desarrollo)
+  sonarqube:
+    image: sonarqube:community
+    container_name: ecoresource-sonarqube
+    restart: always
+    ports:
+      - "9000:9000"
+    environment:
+      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: true
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_logs:/opt/sonarqube/logs
+    networks:
+      - ecoresource-network
+    profiles:
+      - dev  # Solo se inicia con --profile dev
+
+  # OWASP ZAP para pruebas de seguridad (desarrollo)
+  zap:
+    image: owasp/zap2docker-stable
+    container_name: ecoresource-zap
+    command: zap-baseline.py -t http://backend:5000/api/v1 -r zap_report.html
+    volumes:
+      - ./security-reports:/zap/wrk
+    networks:
+      - ecoresource-network
+    profiles:
+      - security  # Solo se inicia con --profile security
+
+networks:
+  ecoresource-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local
+  sonarqube_data:
+    driver: local
+  sonarqube_extensions:
+    driver: local
+  sonarqube_logs:
+    driver: local

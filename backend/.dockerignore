@@ -1,0 +1,16 @@
+# Ignorar en la imagen Docker
+node_modules
+npm-debug.log
+.env
+.env.local
+.git
+.gitignore
+README.md
+.vscode
+.idea
+coverage
+*.test.js
+tests
+.github
+sonar-project.properties
+jest.config.js

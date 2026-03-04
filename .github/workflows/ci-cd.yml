@@ -1,0 +1,236 @@
+name: CI/CD Pipeline - EcoResource Connect
+
+# Trigger del pipeline
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  NODE_VERSION: '18.x'
+  DOCKER_REGISTRY: ghcr.io
+  IMAGE_NAME: ecoresource-connect
+
+jobs:
+  # Job 1: Análisis de código y pruebas
+  test:
+    name: 🧪 Tests y Análisis de Código
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
+    steps:
+      - name: 📥 Checkout del código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Necesario para SonarQube
+
+      - name: 📦 Configurar PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: 🟢 Configurar Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+          cache-dependency-path: backend/pnpm-lock.yaml
+
+      - name: 📚 Instalar dependencias
+        run: |
+          cd backend
+          pnpm install --frozen-lockfile
+
+      - name: 🔍 Lint (ESLint)
+        run: |
+          cd backend
+          pnpm run lint
+        continue-on-error: true
+
+      - name: 🧪 Ejecutar pruebas unitarias con Jest
+        run: |
+          cd backend
+          pnpm run test
+        env:
+          NODE_ENV: test
+          JWT_SECRET: test-secret-key-for-ci
+          MONGODB_TEST_URI: mongodb://localhost:27017/ecoresource_test
+
+      - name: 📊 Generar reporte de cobertura
+        run: |
+          cd backend
+          pnpm run test -- --coverage --coverageReporters=lcov
+
+      - name: 📤 Subir cobertura a Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./backend/coverage/lcov.info
+          flags: backend
+          name: backend-coverage
+        continue-on-error: true
+
+      - name: 📋 SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        with:
+          projectBaseDir: backend
+          args: >
+            -Dsonar.projectKey=ecoresource-connect
+            -Dsonar.sources=src
+            -Dsonar.tests=tests
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.coverage.exclusions=**/*.test.js,**/tests/**
+        continue-on-error: true
+
+  # Job 2: Análisis de seguridad con OWASP ZAP
+  security:
+    name: 🔒 Análisis de Seguridad OWASP ZAP
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+      - name: 📥 Checkout del código
+        uses: actions/checkout@v4
+
+      - name: 📦 Configurar PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: 🟢 Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'pnpm'
+          cache-dependency-path: backend/pnpm-lock.yaml
+
+      - name: 🗄️ Iniciar MongoDB
+        uses: supercharge/mongodb-github-action@1.10.0
+        with:
+          mongodb-version: 6.0
+
+      - name: 📚 Instalar dependencias y ejecutar servidor
+        run: |
+          cd backend
+          pnpm install --frozen-lockfile
+          pnpm run dev &
+          sleep 10
+        env:
+          NODE_ENV: development
+          PORT: 5000
+          JWT_SECRET: test-secret-for-zap
+          MONGODB_URI: mongodb://localhost:27017/ecoresource_zap
+
+      - name: 🛡️ Escaneo OWASP ZAP
+        uses: zaproxy/action-baseline@v0.10.0
+        with:
+          target: 'http://localhost:5000/api/v1'
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a'
+
+  # Job 3: Build y Push de imagen Docker
+  build:
+    name: 🐳 Build & Push Docker Image
+    runs-on: ubuntu-latest
+    needs: [test, security]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      - name: 📥 Checkout del código
+        uses: actions/checkout@v4
+
+      - name: 🔐 Login a GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.DOCKER_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🏷️ Extraer metadata para Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.DOCKER_REGISTRY }}/${{ github.repository }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: 🔨 Build y Push imagen Docker
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Job 4: Despliegue a AWS Fargate
+  deploy:
+    name: 🚀 Despliegue a AWS Fargate
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: 📥 Checkout del código
+        uses: actions/checkout@v4
+
+      - name: 🔐 Configurar credenciales AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: 🔑 Login a Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: 📋 Renderizar definición de tarea ECS
+        id: render-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: .aws/task-definition.json
+          container-name: ecoresource-backend
+          image: ${{ env.DOCKER_REGISTRY }}/${{ github.repository }}:latest
+
+      - name: 🚀 Desplegar a Amazon ECS Fargate
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.render-task-def.outputs.task-definition }}
+          service: ecoresource-connect-service
+          cluster: ecoresource-cluster
+          wait-for-service-stability: true
+
+      - name: ✅ Verificar despliegue
+        run: |
+          echo "✅ Aplicación desplegada exitosamente en AWS Fargate"
+          echo "🌐 URL: https://api.ecoresource-connect.com"
+
+  # Job 5: Notificaciones
+  notify:
+    name: 📢 Notificación de resultados
+    runs-on: ubuntu-latest
+    needs: [test, security, build, deploy]
+    if: always()
+    
+    steps:
+      - name: 📧 Enviar notificación
+        run: |
+          if [ "${{ needs.deploy.result }}" == "success" ]; then
+            echo "✅ Pipeline completado exitosamente"
+          else
+            echo "❌ Pipeline falló en alguna etapa"
+          fi

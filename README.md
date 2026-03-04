@@ -44,10 +44,10 @@ Cada año se desperdician **931 millones de toneladas** de alimentos globalmente
 
 #### Backend
 - **Node.js 18+** con Express.js
-- **MongoDB 6.0** con consultas geoespaciales nativas
+- **MongoDB Atlas** (Free M0) con consultas geoespaciales nativas
 - **JWT** para autenticación (access + refresh tokens)
 - **Docker** para containerización
-- **AWS Fargate** para despliegue serverless
+- **Google Cloud Run** para despliegue serverless (76% más económico que AWS)
 
 #### Frontend
 - **React 18** con Vite
@@ -150,31 +150,47 @@ cp .env.example .env
 # JWT_SECRET=tu-secreto-super-seguro
 ```
 
-#### 3. Iniciar Backend
+#### 4. Ejecutar Tests y Backend
 
-```bash
-# Desarrollo
-pnpm run dev
+```powershell
+# Ejecutar tests (27 tests deben pasar)
+pnpm test
 
-# Producción
-pnpm start
-```
-
-El servidor estará en `http://localhost:5000`
-
-#### 4. Configurar Frontend
-
-```bash
-cd ../frontend
-pnpm install
-
-# Iniciar desarrollo
+# Iniciar servidor de desarrollo
 pnpm run dev
 ```
 
-El frontend estará en `http://localhost:3000`
+**Backend corriendo en**: http://localhost:5000  
+**Health check**: http://localhost:5000/health
 
-### 🐳 Con Docker Compose
+#### 5. (Opcional) Deploy a Google Cloud
+
+Ver guía completa: **[docs/SETUP_GOOGLE_CLOUD.md](docs/SETUP_GOOGLE_CLOUD.md)**
+
+```powershell
+# Instalar gcloud CLI
+choco install gcloudsdk  # o descargar instalador
+
+# Autenticar
+gcloud init
+
+# Build y deploy
+cd backend
+docker build -t gcr.io/YOUR_PROJECT_ID/ecoresource-backend .
+docker push gcr.io/YOUR_PROJECT_ID/ecoresource-backend
+gcloud run deploy ecoresource-backend --image=gcr.io/YOUR_PROJECT_ID/ecoresource-backend
+```
+
+**Costos estimados**:
+- MongoDB Atlas M0: **$0/mes** (gratis)
+- Google Cloud Run: **$0-15/mes** (free tier + uso mínimo)
+- **Total**: ~$15/mes (vs $62/mes en AWS = 76% ahorro)
+
+---
+
+### 🐳 Alternativa: Docker Compose
+
+Para desarrollo local con MongoDB incluido:
 
 ```bash
 # Iniciar todos los servicios

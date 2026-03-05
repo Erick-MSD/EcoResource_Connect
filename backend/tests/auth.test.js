@@ -1,12 +1,9 @@
 import { describe, test, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
 import request from 'supertest';
-import app from '../../src/server.js';
-import User from '../../src/models/User.js';
-import { USER_ROLES, HTTP_STATUS } from '../../src/config/constants.js';
-import { connectTestDB, closeTestDB, clearTestDB } from '../setup/testDb.js';
-
-// Configurar timeout para pruebas
-jest.setTimeout(30000);
+import app from '../src/server.js';
+import User from '../src/models/User.js';
+import { USER_ROLES, HTTP_STATUS } from '../src/config/constants.js';
+import { connectTestDB, closeTestDB, clearTestDB } from './setup/testDb.js';
 
 describe('Auth Controller - Pruebas de Autenticación', () => {
   

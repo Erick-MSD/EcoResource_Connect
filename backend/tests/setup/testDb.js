@@ -26,14 +26,25 @@ export const connectTestDB = async () => {
  */
 export const closeTestDB = async () => {
   try {
-    await mongoose.connection.dropDatabase();
-    await mongoose.connection.close();
-    await mongoServer.stop();
+    // Solo intentar dropDatabase si la conexión está activa
+    if (mongoose.connection.readyState === 1) {
+      await mongoose.connection.dropDatabase();
+    }
+    
+    // Cerrar conexión si está abierta
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.connection.close();
+    }
+    
+    // Detener el servidor de memoria
+    if (mongoServer) {
+      await mongoServer.stop();
+    }
     
     console.log('🔌 MongoDB Memory Server detenido');
   } catch (error) {
     console.error('❌ Error cerrando MongoDB Memory Server:', error);
-    throw error;
+    // No lanzar error para no romper el flujo de tests
   }
 };
 

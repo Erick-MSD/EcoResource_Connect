@@ -575,40 +575,46 @@ gcloud compute project-info describe --project=$PROJECT_ID
 Antes de considerar el deploy completo, verifica:
 
 ### Configuración
-- [ ] Proyecto GCP creado
-- [ ] APIs habilitadas (Cloud Run, Build, Registry)
-- [ ] gcloud CLI instalado y autenticado
-- [ ] Service account con permisos correctos
+- [x] Proyecto GCP creado ✅
+- [x] APIs habilitadas (Cloud Run, Build, Registry) ✅
+- [x] gcloud CLI instalado y autenticado ✅
+- [x] Service account con permisos correctos ✅
 
 ### Secrets
-- [ ] JWT_SECRET creado en Secret Manager
-- [ ] JWT_REFRESH_SECRET creado
-- [ ] MONGODB_URI creado (con Atlas connection string)
-- [ ] Service account tiene acceso a secrets
+- [x] JWT_SECRET creado en Secret Manager ✅
+- [x] JWT_REFRESH_SECRET creado ✅
+- [x] MONGODB_URI creado (con Atlas connection string) ✅
+- [x] Service account tiene acceso a secrets ✅
 
 ### MongoDB Atlas
-- [ ] Cluster creado en Google Cloud (M0 Free)
-- [ ] Usuario de base de datos creado
-- [ ] Network Access configurado (0.0.0.0/0 o IP estática)
-- [ ] Connection string probado localmente
+- [x] Cluster creado en Google Cloud (M0 Free) ✅
+- [x] Usuario de base de datos creado ✅
+- [x] Network Access configurado (0.0.0.0/0 o IP estática) ✅
+- [x] Connection string probado localmente ✅
 
 ### Deployment
-- [ ] Imagen Docker builds correctamente
-- [ ] Imagen pusheada a GCR
-- [ ] Cloud Run service desplegado
-- [ ] Health check responde correctamente
-- [ ] Endpoints de autenticación funcionan
+- [x] Imagen Docker builds correctamente ✅
+- [x] Imagen pusheada a GCR ✅
+- [x] Cloud Run service desplegado ✅
+- [x] Health check responde correctamente ✅
+- [ ] Endpoints de autenticación funcionan (pendiente de probar)
 
 ### CI/CD
-- [ ] GitHub Secrets configurados
-- [ ] Workflow file actualizado
-- [ ] Push a main dispara deployment automático
-- [ ] Tests pasan en CI
+- [ ] Service account para GitHub Actions creado (ejecutar: `backend\setup-cicd.ps1`)
+- [ ] GitHub Secrets configurados (ver: `docs\GITHUB_SECRETS_SETUP.md`)
+- [ ] Workflow files creados (✅ ya están en `.github/workflows/`)
+- [ ] Push a main dispara deployment automático (pendiente de probar)
+
+### Frontend
+- [ ] GitHub Pages habilitado en Settings (ver: `docs\GITHUB_PAGES_SETUP.md`)
+- [ ] Variables de entorno configuradas en workflow
+- [ ] Deploy de frontend exitoso
+- [ ] Frontend conecta con backend de GCP
 
 ### Monitoreo
-- [ ] Logs visibles en GCP Console
-- [ ] Métricas configuradas
-- [ ] Alertas opcionales creadas
+- [x] Logs visibles en GCP Console ✅
+- [x] Métricas configuradas ✅
+- [ ] Alertas opcionales creadas (opcional)
 
 ---
 

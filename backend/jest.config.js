@@ -1,5 +1,6 @@
 export default {
   testEnvironment: 'node',
+  testTimeout: 30000, // 30 segundos para cada test
   coverageDirectory: 'coverage',
   collectCoverageFrom: [
     'src/**/*.js',

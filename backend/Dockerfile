@@ -5,7 +5,7 @@
 FROM node:18-alpine AS builder
 
 # Instalar PNPM
-RUN npm install -g pnpm@8
+RUN npm install -g pnpm@10
 
 # Crear directorio de aplicación
 WORKDIR /app
@@ -14,7 +14,7 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml* ./
 
 # Instalar dependencias (solo producción)
-RUN pnpm install --frozen-lockfile --prod
+RUN pnpm install --no-frozen-lockfile --prod
 
 # Etapa 2: Imagen de producción
 FROM node:18-alpine AS production

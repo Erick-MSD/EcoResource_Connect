@@ -1,10 +1,8 @@
 import { describe, test, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
-import User from '../../src/models/User.js';
-import Donation from '../../src/models/Donation.js';
-import { USER_ROLES, DONATION_STATUS, FOOD_CATEGORIES } from '../../src/config/constants.js';
-import { connectTestDB, closeTestDB, clearTestDB } from '../setup/testDb.js';
-
-jest.setTimeout(30000);
+import User from '../src/models/User.js';
+import Donation from '../src/models/Donation.js';
+import { USER_ROLES, DONATION_STATUS, FOOD_CATEGORIES, PERISHABILITY } from '../src/config/constants.js';
+import { connectTestDB, closeTestDB, clearTestDB } from './setup/testDb.js';
 
 describe('MongoDB Models - Pruebas de Modelos', () => {
   

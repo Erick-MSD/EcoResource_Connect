@@ -17,8 +17,11 @@ dotenv.config();
 // Inicializar Express
 const app = express();
 
-// Conectar a MongoDB
-connectDatabase();
+// Conectar a MongoDB solo si no estamos en modo test
+// (en tests usamos MongoDB Memory Server)
+if (process.env.NODE_ENV !== 'test') {
+  connectDatabase();
+}
 
 // Seguridad: Helmet - Protege contra vulnerabilidades comunes
 app.use(helmet({
@@ -101,23 +104,25 @@ app.use('*', (req, res) => {
 // Middleware de manejo de errores (debe ir al final)
 app.use(errorHandler);
 
-// Iniciar servidor
+// Iniciar servidor solo si no estamos en modo test
 const PORT = process.env.PORT || 5000;
 
-const server = app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en modo ${process.env.NODE_ENV} en puerto ${PORT}`);
-  console.log(`📡 API disponible en http://localhost:${PORT}/api/${API_VERSION}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+  const server = app.listen(PORT, () => {
+    console.log(`🚀 Servidor corriendo en modo ${process.env.NODE_ENV} en puerto ${PORT}`);
+    console.log(`📡 API disponible en http://localhost:${PORT}/api/${API_VERSION}`);
+  });
 
-// Manejo de errores no capturados
-process.on('unhandledRejection', (err) => {
-  console.error('💥 Unhandled Rejection:', err);
-  server.close(() => process.exit(1));
-});
+  // Manejo de errores no capturados
+  process.on('unhandledRejection', (err) => {
+    console.error('💥 Unhandled Rejection:', err);
+    server.close(() => process.exit(1));
+  });
 
-process.on('uncaughtException', (err) => {
-  console.error('💥 Uncaught Exception:', err);
-  process.exit(1);
-});
+  process.on('uncaughtException', (err) => {
+    console.error('💥 Uncaught Exception:', err);
+    process.exit(1);
+  });
+}
 
 export default app;

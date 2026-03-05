@@ -175,7 +175,9 @@ jobs:
         with:
           target: 'http://localhost:5000'
           cmd_options: '-I'
-          allow_issue_writing: false          fail_action: false
+          allow_issue_writing: false
+          fail_action: false
+
       - name: 📊 Upload ZAP Report
         if: always()
         uses: actions/upload-artifact@v4

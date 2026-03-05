@@ -1,0 +1,6 @@
+{
+    "sonarlint.connectedMode.project": {
+        "connectionId": "erick-msd",
+        "projectKey": "Erick-MSD_EcoResource_Connect"
+    }
+}

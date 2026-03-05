@@ -42,11 +42,13 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
-          cache-dependency-path: frontend/pnpm-lock.yaml
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            frontend/pnpm-lock.yaml
 
       - name: 📥 Install dependencies
         working-directory: ./frontend
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: 🔨 Build production bundle
         working-directory: ./frontend

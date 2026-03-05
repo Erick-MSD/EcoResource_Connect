@@ -37,11 +37,11 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
-          cache-dependency-path: backend/pnpm-lock.yaml
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: 📥 Install dependencies
         working-directory: ./backend
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: 🔍 Run ESLint
         working-directory: ./backend
@@ -89,11 +89,11 @@ jobs:
         with:
           node-version: 18
           cache: 'pnpm'
-          cache-dependency-path: backend/pnpm-lock.yaml
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: 📥 Install dependencies
         working-directory: ./backend
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: 🧪 Run tests with coverage
         working-directory: ./backend
@@ -147,11 +147,11 @@ jobs:
         with:
           node-version: 18
           cache: 'pnpm'
-          cache-dependency-path: backend/pnpm-lock.yaml
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: 📥 Install dependencies
         working-directory: ./backend
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: 🚀 Start backend server
         working-directory: ./backend

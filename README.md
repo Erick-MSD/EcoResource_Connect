@@ -213,7 +213,14 @@ docker-compose down
 
 ## 📖 Documentación
 
-### 📋 Documentación del Proyecto
+### � Documentación Principal
+
+- **[📋 Índice General](docs/INDEX.md)** - Navegación completa de toda la documentación
+- **[📊 Resumen Ejecutivo](docs/RESUMEN_EJECUTIVO.md)** - Overview para stakeholders y management
+- **[⚙️ Guía de Instalación](docs/INSTALACION.md)** - Setup paso a paso (local y Docker)
+- **[🔧 Scripts Útiles](docs/SCRIPTS_UTILES.md)** - Comandos frecuentes y troubleshooting
+
+### 📋 Fases del Proyecto
 
 - **[Fase 1: Implementación y Seguridad](docs/FASE_1_IMPLEMENTACION_SEGURIDAD.md)**
   - Desarrollo del módulo de autenticación
@@ -232,6 +239,22 @@ docker-compose down
   - Lecciones aprendidas
   - Plan de mejora continua
   - **Propuesta de análisis predictivo con IA**
+
+### 🚀 Mejora Continua y Referencia
+
+- **[🎯 Mejoras y Lecciones Aprendidas](docs/MEJORAS_Y_LECCIONES.md)**
+  - Comparación planificado vs ejecutado (+7 días overrun)
+  - Lecciones de OWASP ZAP, permisos GitHub Actions, documentación
+  - **Plan de mejora continua**: IA predictiva, tests E2E, preview environments
+  - **Propuestas de innovación**: ML para predicción de donaciones, gamificación, blockchain
+  - Priorización por impacto vs esfuerzo
+
+- **[📚 Referencia de Configuración](docs/REFERENCIA_CONFIGURACION.md)**
+  - Configuración completa de Google Cloud Platform y MongoDB Atlas
+  - Pipeline CI/CD de 6 jobs explicado
+  - Solución de problemas de OWASP ZAP  + GitHub Actions v4
+  - Análisis de costos: 76% ahorro vs AWS
+  - **Uso**: Referencia histórica (no guía paso a paso)
 
 ### 🔗 API Endpoints
 

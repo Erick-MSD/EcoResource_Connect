@@ -8,14 +8,15 @@ Bienvenido a la documentación completa del proyecto **EcoResource Connect**.
 
 ### Nuevo en el proyecto
 1. **[README Principal](../README.md)** - Visión general y quick start
-2. **[Guía de Instalación](INSTALACION.md)** - Setup paso a paso (local y Docker)
-3. **[Scripts Útiles](SCRIPTS_UTILES.md)** - Comandos frecuentes y trucos
+2. **[Resumen Ejecutivo](RESUMEN_EJECUTIVO.md)** - Overview del proyecto para stakeholders
+3. **[Guía de Instalación](INSTALACION.md)** - Setup paso a paso (local y Docker)
+4. **[Scripts Útiles](SCRIPTS_UTILES.md)** - Comandos frecuentes y trucos
 
 ### Desarrolladores
 - **[Backend: package.json](../backend/package.json)** - Dependencias y scripts
-- **[Frontend: package.json](../frontend/package.json)** - Configuración React
 - **[Docker Compose](../docker-compose.yml)** - Orquestación de contenedores
 - **[ESLint Config](../backend/.eslintrc.json)** - Reglas de linting
+- **[CI/CD Workflow](../.github/workflows/ci-cd.yml)** - Pipeline de GitHub Actions
 
 ---
 
@@ -72,6 +73,52 @@ Bienvenido a la documentación completa del proyecto **EcoResource Connect**.
 - **Modelo predictivo**: LSTM para anticipar picos de donaciones
 - **Optimización de rutas**: OR-Tools con 35% menos km
 - **ROI proyectado**: 330% en 6 meses
+
+---
+
+## 🚀 Mejoras y Evolución del Proyecto
+
+### **Mejoras y Lecciones Aprendidas**
+**Archivo**: [MEJORAS_Y_LECCIONES.md](MEJORAS_Y_LECCIONES.md)
+
+**Contenido**:
+- 📊 **Comparación Planificado vs Ejecutado**: Análisis detallado de tiempos reales (+7 días overrun)
+- 📚 **Lecciones Aprendidas**: OWASP ZAP incompatibilidades, permisos GitHub Actions, sobre-documentación
+- 🎯 **Plan de Mejora Continua**: Roadmap de 12 meses con priorización por impacto
+- 🤖 **IA para Predicción de Donaciones**: Propuesta de ML service con RandomForest
+- 📱 **Futuras Features**: Preview environments, tests E2E, app móvil, blockchain, chatbot IA
+
+**Métricas clave**:
+- 7 iteraciones de fixes en OWASP ZAP (+2 días)
+- 76% ahorro vs AWS Fargate
+- Plan de optimización que reduce build time 70%
+
+**Innovaciones propuestas**:
+- Sistema de IA predictiva para optimizar recolección (30% más eficiente)
+- Gamificación con badges y leaderboard (40% mejor retención)
+- Blockchain para trazabilidad inmutable
+- Asistente virtual con GPT-4
+
+---
+
+### **Referencia de Configuración**
+**Archivo**: [REFERENCIA_CONFIGURACION.md](REFERENCIA_CONFIGURACION.md)
+
+**Contenido**:
+- ☁️ **Google Cloud Platform**: Configuración de proyecto, Cloud Run, Service Accounts
+- 🗄️ **MongoDB Atlas**: Cluster setup, colecciones, índices geoespaciales, security
+- 🔄 **CI/CD Pipeline**: 6 jobs (tests, SonarCloud, OWASP ZAP, build, deploy, notify)
+- 🔒 **Seguridad**: Secrets Manager, OWASP ZAP fixes, permisos de workspace
+- 🐳 **Docker**: Dockerfile, estrategia de tags, optimizaciones
+- 💰 **Análisis de Costos**: Comparativa AWS vs GCP, free tier breakdown
+
+**Destacados técnicos**:
+- Solución definitiva: `artifact_name: zap-report` para GitHub Actions v4
+- `sudo chmod -R 777 $GITHUB_WORKSPACE` para permisos ZAP
+- Scale-to-zero config para minimizar costos
+- 66 checks de seguridad aprobados
+
+**Uso**: Referencia histórica de cómo se configuró la infraestructura (no guía paso a paso)
 
 ---
 

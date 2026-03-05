@@ -62,7 +62,7 @@ gcloud projects add-iam-policy-binding ecoresource-connect `
 gcloud iam service-accounts keys create github-actions-key.json `
   --iam-account=$SA_EMAIL `
   --project=ecoresource-connect
-
+r
 # 5. Ver contenido del JSON
 Get-Content github-actions-key.json | Out-String
 ```
@@ -108,33 +108,27 @@ mongodb+srv://ecoresource_admin:Ec0R3s0urc3_2026%21SecureDB@ecoresource-cluster.
 
 ### 4️⃣ JWT_SECRET
 
-**Valor:** Ya lo tienes generado
+**Valor:** Leer desde tu archivo backend\.env local
 
-```
-553c6070a385d8dc46efbf9ae91a2d64149f8eaf0cc2bb8b1c803ed5f90ca102
-```
-
-**Dónde encontrarlo:**
 ```powershell
 # Leer desde .env local
 Select-String -Path "backend\.env" -Pattern "JWT_SECRET="
 ```
 
+El valor debe ser un string hexadecimal de 64 caracteres.
+
 ---
 
 ### 5️⃣ JWT_REFRESH_SECRET
 
-**Valor:** Ya lo tienes generado
+**Valor:** Leer desde tu archivo backend\.env local
 
-```
-a5acbef91e89909c2d51cb82d69f2c069957cac880ed4c9c2e6a1b7a5450d16c
-```
-
-**Dónde encontrarlo:**
 ```powershell
 # Leer desde .env local
 Select-String -Path "backend\.env" -Pattern "JWT_REFRESH_SECRET="
 ```
+
+El valor debe ser un string hexadecimal de 64 caracteres.
 
 ---
 

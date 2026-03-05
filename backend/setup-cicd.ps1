@@ -159,15 +159,16 @@ Write-Host ""
 # Otros secrets necesarios
 # ========================================
 Write-Host "3. MONGODB_URI" -ForegroundColor $GREEN
-Write-Host "   Valor: mongodb+srv://ecoresource_admin:Ec0R3s0urc3_2026%21SecureDB@ecoresource-cluster.olny8dm.mongodb.net/ecoresource_db..." -ForegroundColor $WHITE
+Write-Host "   Valor: [Obtenerlo de tu archivo .env local o MongoDB Atlas]" -ForegroundColor $YELLOW
+Write-Host "   Formato: mongodb+srv://<user>:<password>@<cluster>.mongodb.net/<db>?retryWrites=true&w=majority" -ForegroundColor $WHITE
 Write-Host ""
 
 Write-Host "4. JWT_SECRET" -ForegroundColor $GREEN
-Write-Host "   Valor: 553c6070a385d8dc46efbf9ae91a2d64149f8eaf0cc2bb8b1c803ed5f90ca102" -ForegroundColor $WHITE
+Write-Host "   Valor: [Leer desde backend\.env con: Select-String -Path 'backend\.env' -Pattern 'JWT_SECRET=']" -ForegroundColor $YELLOW
 Write-Host ""
 
 Write-Host "5. JWT_REFRESH_SECRET" -ForegroundColor $GREEN
-Write-Host "   Valor: a5acbef91e89909c2d51cb82d69f2c069957cac880ed4c9c2e6a1b7a5450d16c" -ForegroundColor $WHITE
+Write-Host "   Valor: [Leer desde backend\.env con: Select-String -Path 'backend\.env' -Pattern 'JWT_REFRESH_SECRET=']" -ForegroundColor $YELLOW
 Write-Host ""
 
 # ========================================

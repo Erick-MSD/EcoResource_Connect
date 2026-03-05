@@ -10,12 +10,12 @@
 
 **Original** (como te lo dio MongoDB):
 ```
-mongodb+srv://ecoresource_admin:Ec0R3s0urc3_2026!SecureDB@ecoresource-cluster.olny8dm.mongodb.net/?appName=ecoresource-cluster
+mongodb+srv://<username>:<password>@<cluster>.mongodb.net/?appName=<cluster-name>
 ```
 
 **Para usar en .env y GCP** (con `!` codificado como `%21`):
 ```
-mongodb+srv://ecoresource_admin:Ec0R3s0urc3_2026%21SecureDB@ecoresource-cluster.olny8dm.mongodb.net/ecoresource_db?retryWrites=true&w=majority&appName=ecoresource-cluster
+mongodb+srv://<username>:<password_encoded>@<cluster>.mongodb.net/<database_name>?retryWrites=true&w=majority&appName=<cluster-name>
 ```
 
 ### ✅ RESPUESTA A TU PREGUNTA
@@ -90,8 +90,9 @@ gcloud services list --enabled --project=$PROJECT_ID | Select-String "secretmana
 #### Secret 1: JWT_SECRET
 
 ```powershell
-# Crear secret
-echo -n "553c6070a385d8dc46efbf9ae91a2d64149f8eaf0cc2bb8b1c803ed5f90ca102" | gcloud secrets create JWT_SECRET --data-file=- --project=$PROJECT_ID
+# Crear secret (reemplaza con tu JWT_SECRET desde .env local)
+# Puedes leerlo con: Select-String -Path "backend\.env" -Pattern "JWT_SECRET="
+echo -n "<TU_JWT_SECRET_AQUI>" | gcloud secrets create JWT_SECRET --data-file=- --project=$PROJECT_ID
 
 # Verificar
 gcloud secrets describe JWT_SECRET --project=$PROJECT_ID
@@ -102,8 +103,8 @@ gcloud secrets describe JWT_SECRET --project=$PROJECT_ID
 #### Secret 2: JWT_REFRESH_SECRET
 
 ```powershell
-# Crear secret
-echo -n "a5acbef91e89909c2d51cb82d69f2c069957cac880ed4c9c2e6a1b7a5450d16c" | gcloud secrets create JWT_REFRESH_SECRET --data-file=- --project=$PROJECT_ID
+# Crear secret (reemplaza con tu JWT_REFRESH_SECRET desde .env local)
+echo -n "<TU_JWT_REFRESH_SECRET_AQUI>" | gcloud secrets create JWT_REFRESH_SECRET --data-file=- --project=$PROJECT_ID
 
 # Verificar
 gcloud secrets describe JWT_REFRESH_SECRET --project=$PROJECT_ID
@@ -115,7 +116,8 @@ gcloud secrets describe JWT_REFRESH_SECRET --project=$PROJECT_ID
 
 ```powershell
 # ✅ CORRECTO - Con %21 y nombre de base de datos
-echo -n "mongodb+srv://ecoresource_admin:Ec0R3s0urc3_2026%21SecureDB@ecoresource-cluster.olny8dm.mongodb.net/ecoresource_db?retryWrites=true&w=majority&appName=ecoresource-cluster" | gcloud secrets create MONGODB_URI --data-file=- --project=$PROJECT_ID
+# Reemplaza con tu MongoDB URI real desde MongoDB Atlas
+echo -n "mongodb+srv://<username>:<password_encoded>@<cluster>.mongodb.net/<database>?retryWrites=true&w=majority" | gcloud secrets create MONGODB_URI --data-file=- --project=$PROJECT_ID
 
 # Verificar
 gcloud secrets describe MONGODB_URI --project=$PROJECT_ID
@@ -124,7 +126,7 @@ gcloud secrets describe MONGODB_URI --project=$PROJECT_ID
 **❌ NO uses**:
 ```powershell
 # INCORRECTO - Falta codificar ! y falta nombre de DB
-echo -n "mongodb+srv://ecoresource_admin:Ec0R3s0urc3_2026!SecureDB@..." | gcloud secrets create MONGODB_URI --data-file=-
+echo -n "mongodb+srv://user:password!@cluster..." | gcloud secrets create MONGODB_URI --data-file=-
 ```
 
 ---
@@ -188,9 +190,9 @@ gcloud secrets get-iam-policy JWT_SECRET --project=$PROJECT_ID
 
 | Secret Name | Valor | Notas |
 |-------------|-------|-------|
-| `JWT_SECRET` | `553c6070a385d8dc46efbf...` | 64 chars hex |
-| `JWT_REFRESH_SECRET` | `a5acbef91e89909c2d51cb...` | 64 chars hex |
-| `MONGODB_URI` | `mongodb+srv://ecoresource_admin:Ec0R3s0urc3_2026%21SecureDB@...` | ⚠️ Con `%21` y `/ecoresource_db` |
+| `JWT_SECRET` | `[Leer desde tu .env local]` | 64 chars hex |
+| `JWT_REFRESH_SECRET` | `[Leer desde tu .env local]` | 64 chars hex |
+| `MONGODB_URI` | `mongodb+srv://<user>:<pass_encoded>@<cluster>.mongodb.net/<db>?...` | ⚠️ Con `%21` y `/database_name` |
 
 ---
 
@@ -261,8 +263,9 @@ Antes de subirlo a GCP, prueba que funcione:
 ```powershell
 cd backend
 
-# Probar conexión (con la URI codificada)
-node -e "const mongoose = require('mongoose'); mongoose.connect('mongodb+srv://ecoresource_admin:Ec0R3s0urc3_2026%21SecureDB@ecoresource-cluster.olny8dm.mongodb.net/ecoresource_db?retryWrites=true&w=majority').then(() => { console.log('✅ Conexión exitosa!'); process.exit(0); }).catch(err => { console.error('❌ Error:', err.message); process.exit(1); });"
+# Probar conexión (con la URI codificada desde tu .env)
+# Reemplaza <TU_MONGODB_URI> con tu connection string real
+node -e "const mongoose = require('mongoose'); mongoose.connect(process.env.MONGODB_URI || '<TU_MONGODB_URI>').then(() => { console.log('✅ Conexión exitosa!'); process.exit(0); }).catch(err => { console.error('❌ Error:', err.message); process.exit(1); });"
 ```
 
 **Resultado esperado**: `✅ Conexión exitosa!`
@@ -342,10 +345,10 @@ Para este proyecto: **$0/mes** (estás muy por debajo del límite)
 
 ### Database Access
 
-Ya configurado:
-- Usuario: `ecoresource_admin`
-- Password: `Ec0R3s0urc3_2026!SecureDB` (en Atlas)
-- Pero en URI usa: `Ec0R3s0urc3_2026%21SecureDB`
+Configura en MongoDB Atlas:
+- Usuario: `<tu_usuario>`
+- Password: `<tu_password>` (en Atlas)
+- Pero en URI usa la versión codificada: caracteres especiales deben ser URL-encoded
 
 ---
 

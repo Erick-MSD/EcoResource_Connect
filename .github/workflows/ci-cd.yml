@@ -167,7 +167,10 @@ jobs:
           echo $! > server.pid
           sleep 10
 
-      - name: 🔒 Run OWASP ZAP Baseline Scan
+      - name: � Fix workspace permissions for ZAP
+        run: sudo chmod -R 777 $GITHUB_WORKSPACE
+
+      - name: �🔒 Run OWASP ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.10.0
         with:
           target: 'http://localhost:5000'
